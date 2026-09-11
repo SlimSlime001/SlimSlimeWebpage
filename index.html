@@ -162,6 +162,15 @@
       transform: scale(0.96);
     }
 
+    .version-info {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      font-size: 0.75rem;
+      color: #546e7a;
+      font-family: monospace;
+    }
+
     @media (pointer: coarse), (max-width: 700px) {
       .desktop-controls {
         display: none;
@@ -188,6 +197,8 @@
 </head>
 
 <body>
+  <div class="version-info">v0.0.4</div>
+
   <main class="game-wrapper">
     <h1>PONG</h1>
 

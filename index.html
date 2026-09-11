@@ -50,6 +50,18 @@
       letter-spacing: 1px;
     }
 
+    .ai-badge {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: #f39c12;
+      color: #05080c;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
     canvas {
       display: block;
       width: 100%;
@@ -87,6 +99,22 @@
 
     button:active {
       transform: scale(0.98);
+    }
+
+    #aiToggle {
+      background: #f39c12;
+    }
+
+    #aiToggle:hover {
+      background: #e67e22;
+    }
+
+    #aiToggle.active {
+      background: #27ae60;
+    }
+
+    #aiToggle.active:hover {
+      background: #229954;
     }
 
     .mobile-controls {
@@ -163,7 +191,7 @@
       </div>
 
       <div>
-        <span class="player-label">PLAYER 2</span>
+        <span class="player-label">PLAYER 2<span class="ai-badge" id="aiBadge" style="display: none;">AI</span></span>
         <span id="rightScore">0</span>
       </div>
     </div>
@@ -195,6 +223,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
 
       <button id="pauseButton">Pause</button>
       <button id="restartButton">Restart Game</button>
+      <button id="aiToggle">Enable AI</button>
     </div>
   </main>
 
@@ -206,6 +235,8 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
     const rightScoreElement = document.getElementById("rightScore");
     const pauseButton = document.getElementById("pauseButton");
     const restartButton = document.getElementById("restartButton");
+    const aiToggle = document.getElementById("aiToggle");
+    const aiBadge = document.getElementById("aiBadge");
     const controlButtons = document.querySelectorAll(".control-button");
 
     const paddleWidth = 14;
@@ -240,6 +271,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
     let leftScore = 0;
     let rightScore = 0;
     let paused = false;
+    let aiEnabled = false;
 
     const keys = {};
 
@@ -293,6 +325,13 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       resetGame();
     });
 
+    aiToggle.addEventListener("click", () => {
+      aiEnabled = !aiEnabled;
+      aiToggle.textContent = aiEnabled ? "Disable AI" : "Enable AI";
+      aiToggle.classList.toggle("active");
+      aiBadge.style.display = aiEnabled ? "inline-block" : "none";
+    });
+
     function resetBall(direction = 1) {
       ball.x = canvas.width / 2 - ball.size / 2;
       ball.y = canvas.height / 2 - ball.size / 2;
@@ -316,6 +355,60 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       resetBall(Math.random() > 0.5 ? 1 : -1);
     }
 
+    function predictBallPosition() {
+      // Predict where the ball will be when it reaches the right paddle's x position
+      let predictionX = ball.x;
+      let predictionY = ball.y;
+      let predictionDX = ball.dx;
+      let predictionDY = ball.dy;
+
+      // Simulate ball movement until it reaches right paddle x
+      while (predictionX < rightPaddle.x) {
+        predictionX += predictionDX;
+        predictionY += predictionDY;
+
+        // Handle wall bounces
+        if (predictionY <= 0 || predictionY + ballSize >= canvas.height) {
+          predictionDY *= -1;
+          predictionY = Math.max(0, Math.min(canvas.height - ballSize, predictionY));
+        }
+      }
+
+      return predictionY;
+    }
+
+    function updateAI() {
+      // Only move AI if ball is coming towards it (ball.dx > 0)
+      if (ball.dx > 0) {
+        const predictedY = predictBallPosition();
+        const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
+        const targetY = predictedY + ballSize / 2;
+
+        // Add some imperfection to make it beatable (reaction time delay)
+        const reactionDelay = 30; // pixels of error
+        const adjustedTarget = targetY + (Math.random() - 0.5) * reactionDelay;
+
+        if (paddleCenter < adjustedTarget - 5) {
+          rightPaddle.dy = paddleSpeed;
+        } else if (paddleCenter > adjustedTarget + 5) {
+          rightPaddle.dy = -paddleSpeed;
+        } else {
+          rightPaddle.dy = 0;
+        }
+      } else {
+        // Center the paddle when ball is on the other side
+        const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
+        const targetCenter = canvas.height / 2;
+        if (paddleCenter < targetCenter - 5) {
+          rightPaddle.dy = paddleSpeed * 0.5;
+        } else if (paddleCenter > targetCenter + 5) {
+          rightPaddle.dy = -paddleSpeed * 0.5;
+        } else {
+          rightPaddle.dy = 0;
+        }
+      }
+    }
+
     function updatePaddles() {
       leftPaddle.dy = 0;
       rightPaddle.dy = 0;
@@ -328,12 +421,16 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
         leftPaddle.dy = paddleSpeed;
       }
 
-      if (keys["arrowup"]) {
-        rightPaddle.dy = -paddleSpeed;
-      }
+      if (!aiEnabled) {
+        if (keys["arrowup"]) {
+          rightPaddle.dy = -paddleSpeed;
+        }
 
-      if (keys["arrowdown"]) {
-        rightPaddle.dy = paddleSpeed;
+        if (keys["arrowdown"]) {
+          rightPaddle.dy = paddleSpeed;
+        }
+      } else {
+        updateAI();
       }
 
       leftPaddle.y += leftPaddle.dy;

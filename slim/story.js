@@ -2,10 +2,15 @@
 
 (function() {
 
-  var stories = lib Stories;
+  // Initialize SugarCube.
+  window.sugarcube = new Sugarcube({
+    "includeJS": ["lib/twine.js"],
+    "storyName": "Adventure Game",
+    "startPageID": "intro"
+  });
 
-  // Function to handle play button click
-  function startGame() {
+  // Add event listener to play button
+  document.getElementById("play-button").addEventListener("click", function() {
     console.log("Play button clicked!");
     
     // Show gender selection screen
@@ -18,10 +23,5 @@
     `;
     
     document.getElementById("game-container").innerHTML = html;
-  }
-
-  // Add event listener to play button
-  document.getElementById("play-button").addEventListener("click", function() {
-    startGame();
   });
 })();

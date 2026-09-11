@@ -81,6 +81,13 @@
       line-height: 1.6;
     }
 
+    .difficulty-info {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      margin-top: 8px;
+      min-height: 20px;
+    }
+
     button {
       margin: 5px;
       padding: 10px 20px;
@@ -224,6 +231,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       <button id="pauseButton">Pause</button>
       <button id="restartButton">Restart Game</button>
       <button id="aiToggle">Enable AI</button>
+      <div class="difficulty-info" id="difficultyInfo"></div>
     </div>
   </main>
 
@@ -237,6 +245,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
     const restartButton = document.getElementById("restartButton");
     const aiToggle = document.getElementById("aiToggle");
     const aiBadge = document.getElementById("aiBadge");
+    const difficultyInfo = document.getElementById("difficultyInfo");
     const controlButtons = document.querySelectorAll(".control-button");
 
     const paddleWidth = 14;
@@ -272,6 +281,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
     let rightScore = 0;
     let paused = false;
     let aiEnabled = false;
+    let aiDifficulty = 0; // 0 = very bad, increases with player score
 
     const keys = {};
 
@@ -330,7 +340,28 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       aiToggle.textContent = aiEnabled ? "Disable AI" : "Enable AI";
       aiToggle.classList.toggle("active");
       aiBadge.style.display = aiEnabled ? "inline-block" : "none";
+      updateDifficultyDisplay();
     });
+
+    function updateDifficultyDisplay() {
+      if (!aiEnabled) {
+        difficultyInfo.textContent = "";
+        return;
+      }
+
+      const difficultyLevels = [
+        "AI Level: Extremely Easy 🥚",
+        "AI Level: Very Easy 🐤",
+        "AI Level: Easy 🐤",
+        "AI Level: Normal 🦆",
+        "AI Level: Hard 🦅",
+        "AI Level: Very Hard 🔥",
+        "AI Level: Extreme 💎"
+      ];
+
+      const level = Math.min(aiDifficulty, difficultyLevels.length - 1);
+      difficultyInfo.textContent = difficultyLevels[level];
+    }
 
     function resetBall(direction = 1) {
       ball.x = canvas.width / 2 - ball.size / 2;
@@ -342,6 +373,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
     function resetGame() {
       leftScore = 0;
       rightScore = 0;
+      aiDifficulty = 0;
 
       leftScoreElement.textContent = leftScore;
       rightScoreElement.textContent = rightScore;
@@ -352,6 +384,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       paused = false;
       pauseButton.textContent = "Pause";
 
+      updateDifficultyDisplay();
       resetBall(Math.random() > 0.5 ? 1 : -1);
     }
 
@@ -377,6 +410,18 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       return predictionY;
     }
 
+    function getAIReactionDelay() {
+      // Scale reaction delay inversely with difficulty
+      // Difficulty 0: 200px error (very bad)
+      // Difficulty 1: 160px error
+      // Difficulty 2: 120px error
+      // Difficulty 3: 80px error
+      // Difficulty 4: 40px error
+      // Difficulty 5: 20px error
+      // Difficulty 6: 5px error (nearly perfect)
+      return Math.max(5, 200 - aiDifficulty * 30);
+    }
+
     function updateAI() {
       // Only move AI if ball is coming towards it (ball.dx > 0)
       if (ball.dx > 0) {
@@ -384,8 +429,7 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
         const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
         const targetY = predictedY + ballSize / 2;
 
-        // Add some imperfection to make it beatable (reaction time delay)
-        const reactionDelay = 30; // pixels of error
+        const reactionDelay = getAIReactionDelay();
         const adjustedTarget = targetY + (Math.random() - 0.5) * reactionDelay;
 
         if (paddleCenter < adjustedTarget - 5) {
@@ -493,6 +537,13 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       if (ball.x + ball.size < 0) {
         rightScore++;
         rightScoreElement.textContent = rightScore;
+        
+        // Update AI difficulty every 3 points
+        if (rightScore % 3 === 0) {
+          aiDifficulty = Math.floor(rightScore / 3);
+          updateDifficultyDisplay();
+        }
+        
         resetBall(-1);
       }
 

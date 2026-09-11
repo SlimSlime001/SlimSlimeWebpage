@@ -410,46 +410,45 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
       return predictionY;
     }
 
-    function getAIReactionDelay() {
-      // Scale reaction delay inversely with difficulty
-      // Difficulty 0: 200px error (very bad)
-      // Difficulty 1: 160px error
-      // Difficulty 2: 120px error
-      // Difficulty 3: 80px error
-      // Difficulty 4: 40px error
-      // Difficulty 5: 20px error
-      // Difficulty 6: 5px error (nearly perfect)
-      return Math.max(5, 200 - aiDifficulty * 30);
+    function getAIParams() {
+      // Returns {speedMultiplier, usePrediction, errorMargin}
+      // Difficulty 0: 0.3x speed, no prediction, 150px error (very bad)
+      // Difficulty 1: 0.4x speed, no prediction, 120px error
+      // Difficulty 2: 0.5x speed, partial prediction, 90px error
+      // Difficulty 3: 0.7x speed, good prediction, 60px error
+      // Difficulty 4: 0.9x speed, excellent prediction, 30px error
+      // Difficulty 5: 1.0x speed, perfect prediction, 15px error
+      // Difficulty 6: 1.1x speed, perfect prediction, 5px error
+
+      const params = [
+        { speed: 0.3, usePrediction: false, error: 150 },
+        { speed: 0.4, usePrediction: false, error: 120 },
+        { speed: 0.5, usePrediction: false, error: 90 },
+        { speed: 0.7, usePrediction: true, error: 60 },
+        { speed: 0.9, usePrediction: true, error: 30 },
+        { speed: 1.0, usePrediction: true, error: 15 },
+        { speed: 1.1, usePrediction: true, error: 5 }
+      ];
+
+      return params[Math.min(aiDifficulty, params.length - 1)];
     }
 
     function updateAI() {
-      // Only move AI if ball is coming towards it (ball.dx > 0)
-      if (ball.dx > 0) {
-        const predictedY = predictBallPosition();
-        const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
-        const targetY = predictedY + ballSize / 2;
+      const params = getAIParams();
+      const targetY = params.usePrediction 
+        ? predictBallPosition() + ballSize / 2
+        : ball.y + ballSize / 2;
 
-        const reactionDelay = getAIReactionDelay();
-        const adjustedTarget = targetY + (Math.random() - 0.5) * reactionDelay;
+      const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
+      const adjustedTarget = targetY + (Math.random() - 0.5) * params.error;
+      const effectiveSpeed = paddleSpeed * params.speed;
 
-        if (paddleCenter < adjustedTarget - 5) {
-          rightPaddle.dy = paddleSpeed;
-        } else if (paddleCenter > adjustedTarget + 5) {
-          rightPaddle.dy = -paddleSpeed;
-        } else {
-          rightPaddle.dy = 0;
-        }
+      if (paddleCenter < adjustedTarget - 10) {
+        rightPaddle.dy = effectiveSpeed;
+      } else if (paddleCenter > adjustedTarget + 10) {
+        rightPaddle.dy = -effectiveSpeed;
       } else {
-        // Center the paddle when ball is on the other side
-        const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
-        const targetCenter = canvas.height / 2;
-        if (paddleCenter < targetCenter - 5) {
-          rightPaddle.dy = paddleSpeed * 0.5;
-        } else if (paddleCenter > targetCenter + 5) {
-          rightPaddle.dy = -paddleSpeed * 0.5;
-        } else {
-          rightPaddle.dy = 0;
-        }
+        rightPaddle.dy = 0;
       }
     }
 

@@ -365,6 +365,8 @@ Player 2: <strong>↑</strong> / <strong>↓</strong>
 
       if (ball.y <= 0 || ball.y + ball.size >= canvas.height) {
         ball.dy *= -1;
+        // Clamp ball back inside bounds to prevent glitching
+        ball.y = Math.max(0, Math.min(canvas.height - ball.size, ball.y));
       }
 
       if (isColliding(leftPaddle) && ball.dx < 0) {

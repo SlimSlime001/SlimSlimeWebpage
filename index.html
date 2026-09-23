@@ -1,634 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mobile Pong</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <!-- Custom PreHead code is injected here -->
+    
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #101820;
-      color: white;
-      font-family: Arial, sans-serif;
-      overscroll-behavior: none;
-    }
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name ="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta charset="utf-8"/>
 
-    .game-wrapper {
-      width: min(95vw, 900px);
-      text-align: center;
-    }
+        <!-- Builtin injector for disabling cache -->
+        <meta http-equiv="pragma" content="no-cache"/>
 
-    h1 {
-      margin: 0 0 12px;
-      font-size: 2rem;
-      letter-spacing: 4px;
-    }
+        <!-- Set the title bar of the page -->
+        <title>TestHTML1</title>
 
-    .scoreboard {
-      display: flex;
-      justify-content: center;
-      gap: 80px;
-      margin-bottom: 12px;
-      font-size: 2rem;
-      font-weight: bold;
-    }
+        <!-- Custom PreStyle code is injected here -->
+        
 
-    .player-label {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 0.75rem;
-      color: #9fb3c8;
-      letter-spacing: 1px;
-    }
+        <!-- Set the background colour of the document -->
+        <style>
+            body {
+                background: #0;
+                color: #cccccc;
+                margin: 0px;
+                padding: 0px;
+                border: 0px;
+            }
 
-    .ai-badge {
-      display: inline-block;
-      margin-left: 8px;
-      padding: 2px 8px;
-      background: #f39c12;
-      color: #05080c;
-      font-size: 0.65rem;
-      font-weight: bold;
-      border-radius: 4px;
-      letter-spacing: 0.5px;
-    }
+            canvas {
+                image-rendering: optimizeSpeed;
+                -webkit-interpolation-mode: nearest-neighbor;
+                -ms-touch-action: none;
+                touch-action: none;
+                margin: 0px;
+                padding: 0px;
+                border: 0px;
+            }
+            :-webkit-full-screen #canvas {
+                width: 100%;
+                height: 100%;
+            }
+            :-webkit-full-screen {
+                width: 100%;
+                height: 100%;
+            }
+            
+            /* Custom Runner Styles */
+            div.gm4html5_div_class {
+                margin: 0px;
+                padding: 0px;
+                border: 0px;
+            }
+            div.gm4html5_login {
+                padding: 20px;
+                position: absolute;
+                border: solid 2px #000000;
+                background-color: #404040;
+                color:#00ff00;
+                border-radius: 15px;
+                box-shadow: #101010 20px 20px 40px;
+            }
+            div.gm4html5_cancel_button {
+                float: right;
+            }
+            div.gm4html5_login_button {
+                float: left;
+            }
+            div.gm4html5_login_header {
+                text-align: center;
+            }
+            /* END - Custom Runner Styles */
+            
+        </style>
 
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      background: #05080c;
-      border: 3px solid white;
-      border-radius: 8px;
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
-      touch-action: none;
-      aspect-ratio: 900 / 500;
-    }
+        <!-- Custom PostStyle code is injected here -->
+        
 
-    .controls {
-      margin-top: 14px;
-      color: #b8c7d9;
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
+        <!-- Builtin injector for injecting flurry analytics code -->
+        
+    </head>
 
-    .difficulty-info {
-      font-size: 0.85rem;
-      color: #7f8c8d;
-      margin-top: 8px;
-      min-height: 20px;
-    }
+    <!-- Custom PostHead code is injected here -->
+    
 
-    button {
-      margin: 5px;
-      padding: 10px 20px;
-      border: 0;
-      border-radius: 5px;
-      background: #28a9e0;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
+    <!-- Custom PreBody code is injected here -->
+    
 
-    button:hover {
-      background: #168dc0;
-    }
+    <body>
+        <!-- Custom BodyStart code is injected here -->
+        
 
-    button:active {
-      transform: scale(0.98);
-    }
+        <div class="gm4html5_div_class" id="gm4html5_div_id">
+            
+            <!-- Builtin injector for splash screen -->
+            
 
-    #aiToggle {
-      background: #f39c12;
-    }
+            <!-- Custom PreCanvas code is injected here -->
+            
 
-    #aiToggle:hover {
-      background: #e67e22;
-    }
-
-    #aiToggle.active {
-      background: #27ae60;
-    }
-
-    #aiToggle.active:hover {
-      background: #229954;
-    }
-
-    .mobile-controls {
-      display: none;
-      justify-content: space-between;
-      gap: 30px;
-      margin: 14px auto;
-    }
-
-    .mobile-player {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .mobile-player span {
-      font-size: 0.75rem;
-      color: #9fb3c8;
-      letter-spacing: 1px;
-    }
-
-    .control-button {
-      width: 80px;
-      height: 48px;
-      margin: 0;
-      padding: 0;
-      border-radius: 8px;
-      font-size: 1.4rem;
-      touch-action: none;
-      user-select: none;
-      transition: background 0.2s ease, transform 0.1s ease;
-    }
-
-    .control-button:active {
-      background: #168dc0;
-      transform: scale(0.96);
-    }
-
-    .version-info {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      font-size: 0.75rem;
-      color: #546e7a;
-      font-family: monospace;
-    }
-
-    @media (pointer: coarse), (max-width: 700px) {
-      .desktop-controls {
-        display: none;
-      }
-
-      .mobile-controls {
-        display: flex;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .scoreboard {
-        gap: 45px;
-        font-size: 1.6rem;
-      }
-
-      .controls {
-        font-size: 0.85rem;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="version-info">v0.0.6</div>
-
-  <a href="slim/">Go to Slim</a>
-
-  <main class="game-wrapper">
-    <h1>PONG</h1>
-
-    <div class="scoreboard">
-      <div>
-        <span class="player-label">PLAYER 1</span>
-        <span id="leftScore">0</span>
-      </div>
-
-      <div>
-        <span class="player-label">PLAYER 2<span class="ai-badge" id="aiBadge" style="display: none;">AI</span></span>
-        <span id="rightScore">0</span>
-      </div>
-    </div>
-
-    <canvas id="gameCanvas" width="900" height="500"></canvas>
-
-    <div class="controls">
-      <div class="desktop-controls">
-        Player 1: <strong>W</strong> / <strong>S</strong>
-        &nbsp; | &nbsp;
-Player 2: <strong>↑</strong> / <strong>↓</strong>
-        <br>
-        Press <strong>Space</strong> to pause or resume
-      </div>
-
-      <div class="mobile-controls">
-        <div class="mobile-player">
-          <span>PLAYER 1</span>
-          <button class="control-button" data-key="w">▲</button>
-          <button class="control-button" data-key="s">▼</button>
+            <!-- Create the canvas element the game draws to -->
+            <canvas id="canvas" width="1280" height="720" style="position: absolute; top: 50%; left: 50%; bottom: -50%; right: -50%; transform: translate(-50%, -50%);">
+                
+                <p>Your browser doesn't support HTML5 canvas.</p>
+            </canvas>
+            
+            <!-- Custom PostCanvas code is injected here -->
+            
         </div>
 
-        <div class="mobile-player">
-          <span>PLAYER 2</span>
-          <button class="control-button" data-key="arrowup">▲</button>
-          <button class="control-button" data-key="arrowdown">▼</button>
-        </div>
-      </div>
+        <!-- Run the game code -->
+        <script type="text/javascript" src="html5game/TestHTML1.js?cachebust=177526031"></script>
 
-      <button id="pauseButton">Pause</button>
-      <button id="restartButton">Restart Game</button>
-      <button id="aiToggle">Enable AI</button>
-      <div class="difficulty-info" id="difficultyInfo"></div>
-    </div>
-  </main>
-
-  <script>
-
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    const leftScoreElement = document.getElementById("leftScore");
-    const rightScoreElement = document.getElementById("rightScore");
-    const pauseButton = document.getElementById("pauseButton");
-    const restartButton = document.getElementById("restartButton");
-    const aiToggle = document.getElementById("aiToggle");
-    const aiBadge = document.getElementById("aiBadge");
-    const difficultyInfo = document.getElementById("difficultyInfo");
-    const controlButtons = document.querySelectorAll(".control-button");
-
-    const paddleWidth = 14;
-    const paddleHeight = 100;
-    const paddleSpeed = 7;
-    const ballSize = 12;
-
-    const leftPaddle = {
-      x: 25,
-      y: canvas.height / 2 - paddleHeight / 2,
-      width: paddleWidth,
-      height: paddleHeight,
-      dy: 0
-    };
-
-    const rightPaddle = {
-      x: canvas.width - 25 - paddleWidth,
-      y: canvas.height / 2 - paddleHeight / 2,
-      width: paddleWidth,
-      height: paddleHeight,
-      dy: 0
-    };
-
-    const ball = {
-      x: canvas.width / 2 - ballSize / 2,
-      y: canvas.height / 2 - ballSize / 2,
-      size: ballSize,
-      dx: 5,
-      dy: 3
-    };
-
-    let leftScore = 0;
-    let rightScore = 0;
-    let paused = false;
-    let aiEnabled = false;
-    let aiDifficulty = 0; // 0 = very bad, increases with player score
-
-    const keys = {};
-
-    document.addEventListener("keydown", (event) => {
-      const key = event.key.toLowerCase();
-      keys[key] = true;
-
-      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-        event.preventDefault();
-      }
-
-      if (event.code === "Space") {
-        event.preventDefault();
-        paused = !paused;
-        pauseButton.textContent = paused ? "Resume" : "Pause";
-      }
-    });
-
-    document.addEventListener("keyup", (event) => {
-      keys[event.key.toLowerCase()] = false;
-    });
-
-    controlButtons.forEach((button) => {
-      const key = button.dataset.key;
-
-      button.addEventListener("pointerdown", (event) => {
-        event.preventDefault();
-        keys[key] = true;
-      });
-
-      button.addEventListener("pointerup", (event) => {
-        event.preventDefault();
-        keys[key] = false;
-      });
-
-      button.addEventListener("pointerleave", () => {
-        keys[key] = false;
-      });
-
-      button.addEventListener("pointercancel", () => {
-        keys[key] = false;
-      });
-    });
-
-    pauseButton.addEventListener("click", () => {
-      paused = !paused;
-      pauseButton.textContent = paused ? "Resume" : "Pause";
-    });
-
-    restartButton.addEventListener("click", () => {
-      resetGame();
-    });
-
-    aiToggle.addEventListener("click", () => {
-      aiEnabled = !aiEnabled;
-      aiToggle.textContent = aiEnabled ? "Disable AI" : "Enable AI";
-      aiToggle.classList.toggle("active");
-      aiBadge.style.display = aiEnabled ? "inline-block" : "none";
-      updateDifficultyDisplay();
-    });
-
-    function updateDifficultyDisplay() {
-      if (!aiEnabled) {
-        difficultyInfo.textContent = "";
-        return;
-      }
-
-      const difficultyLevels = [
-        "AI Level: Extremely Easy 🥚",
-        "AI Level: Very Easy 🐤",
-        "AI Level: Easy 🐤",
-        "AI Level: Normal 🦆",
-        "AI Level: Hard 🦅",
-        "AI Level: Very Hard 🔥",
-        "AI Level: Extreme 💎"
-      ];
-
-      const level = Math.min(aiDifficulty, difficultyLevels.length - 1);
-      difficultyInfo.textContent = difficultyLevels[level];
-    }
-
-    function resetBall(direction = 1) {
-      ball.x = canvas.width / 2 - ball.size / 2;
-      ball.y = canvas.height / 2 - ball.size / 2;
-      ball.dx = 5 * direction;
-      ball.dy = (Math.random() > 0.5 ? 1 : -1) * 3;
-    }
-
-    function resetGame() {
-      leftScore = 0;
-      rightScore = 0;
-      aiDifficulty = 0;
-
-      leftScoreElement.textContent = leftScore;
-      rightScoreElement.textContent = rightScore;
-
-      leftPaddle.y = canvas.height / 2 - paddleHeight / 2;
-      rightPaddle.y = canvas.height / 2 - paddleHeight / 2;
-
-      paused = false;
-      pauseButton.textContent = "Pause";
-
-      updateDifficultyDisplay();
-      resetBall(Math.random() > 0.5 ? 1 : -1);
-    }
-
-    function predictBallPosition() {
-      // Predict where the ball will be when it reaches the right paddle's x position
-      let predictionX = ball.x;
-      let predictionY = ball.y;
-      let predictionDX = ball.dx;
-      let predictionDY = ball.dy;
-
-      // Simulate ball movement until it reaches right paddle x
-      while (predictionX < rightPaddle.x) {
-        predictionX += predictionDX;
-        predictionY += predictionDY;
-
-        // Handle wall bounces
-        if (predictionY <= 0 || predictionY + ballSize >= canvas.height) {
-          predictionDY *= -1;
-          predictionY = Math.max(0, Math.min(canvas.height - ballSize, predictionY));
-        }
-      }
-
-      return predictionY;
-    }
-
-    function getAIParams() {
-      // Returns {speedMultiplier, usePrediction, errorMargin}
-      // Difficulty 0: 0.3x speed, no prediction, 150px error (very bad)
-      // Difficulty 1: 0.4x speed, no prediction, 120px error
-      // Difficulty 2: 0.5x speed, partial prediction, 90px error
-      // Difficulty 3: 0.7x speed, good prediction, 60px error
-      // Difficulty 4: 0.9x speed, excellent prediction, 30px error
-      // Difficulty 5: 1.0x speed, perfect prediction, 15px error
-      // Difficulty 6: 1.1x speed, perfect prediction, 5px error
-
-      const params = [
-        { speed: 0.3, usePrediction: false, error: 150 },
-        { speed: 0.4, usePrediction: false, error: 120 },
-        { speed: 0.5, usePrediction: false, error: 90 },
-        { speed: 0.7, usePrediction: true, error: 60 },
-        { speed: 0.9, usePrediction: true, error: 30 },
-        { speed: 1.0, usePrediction: true, error: 15 },
-        { speed: 1.1, usePrediction: true, error: 5 }
-      ];
-
-      return params[Math.min(aiDifficulty, params.length - 1)];
-    }
-
-    function updateAI() {
-      const params = getAIParams();
-      const targetY = params.usePrediction 
-        ? predictBallPosition() + ballSize / 2
-        : ball.y + ballSize / 2;
-
-      const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
-      const adjustedTarget = targetY + (Math.random() - 0.5) * params.error;
-      const effectiveSpeed = paddleSpeed * params.speed;
-
-      if (paddleCenter < adjustedTarget - 10) {
-        rightPaddle.dy = effectiveSpeed;
-      } else if (paddleCenter > adjustedTarget + 10) {
-        rightPaddle.dy = -effectiveSpeed;
-      } else {
-        rightPaddle.dy = 0;
-      }
-    }
-
-    function updatePaddles() {
-      leftPaddle.dy = 0;
-      rightPaddle.dy = 0;
-
-      if (keys["w"]) {
-        leftPaddle.dy = -paddleSpeed;
-      }
-
-      if (keys["s"]) {
-        leftPaddle.dy = paddleSpeed;
-      }
-
-      if (!aiEnabled) {
-        if (keys["arrowup"]) {
-          rightPaddle.dy = -paddleSpeed;
-        }
-
-        if (keys["arrowdown"]) {
-          rightPaddle.dy = paddleSpeed;
-        }
-      } else {
-        updateAI();
-      }
-
-      leftPaddle.y += leftPaddle.dy;
-      rightPaddle.y += rightPaddle.dy;
-
-      leftPaddle.y = Math.max(
-        0,
-        Math.min(canvas.height - leftPaddle.height, leftPaddle.y)
-      );
-
-      rightPaddle.y = Math.max(
-        0,
-        Math.min(canvas.height - rightPaddle.height, rightPaddle.y)
-      );
-    }
-
-    function isColliding(paddle) {
-      return (
-        ball.x < paddle.x + paddle.width &&
-        ball.x + ball.size > paddle.x &&
-        ball.y < paddle.y + paddle.height &&
-        ball.y + ball.size > paddle.y
-      );
-    }
-
-    function updateBall() {
-      ball.x += ball.dx;
-      ball.y += ball.dy;
-
-      if (ball.y <= 0 || ball.y + ball.size >= canvas.height) {
-        ball.dy *= -1;
-        // Clamp ball back inside bounds to prevent glitching
-        ball.y = Math.max(0, Math.min(canvas.height - ball.size, ball.y));
-      }
-
-      if (isColliding(leftPaddle) && ball.dx < 0) {
-        ball.x = leftPaddle.x + leftPaddle.width;
-
-        const paddleCenter = leftPaddle.y + leftPaddle.height / 2;
-        const ballCenter = ball.y + ball.size / 2;
-        const hitPosition =
-          (ballCenter - paddleCenter) / (paddleHeight / 2);
-
-        ball.dx = Math.abs(ball.dx) + 0.25;
-        ball.dy = hitPosition * 5;
-      }
-
-      if (isColliding(rightPaddle) && ball.dx > 0) {
-        ball.x = rightPaddle.x - ball.size;
-
-        const paddleCenter = rightPaddle.y + rightPaddle.height / 2;
-        const ballCenter = ball.y + ball.size / 2;
-        const hitPosition =
-          (ballCenter - paddleCenter) / (paddleHeight / 2);
-
-        ball.dx = -Math.abs(ball.dx) - 0.25;
-        ball.dy = hitPosition * 5;
-      }
-
-      if (ball.x + ball.size < 0) {
-        rightScore++;
-        rightScoreElement.textContent = rightScore;
+        <!-- Builtin injector for injecting runner path -->
         
-        // Update AI difficulty every 3 points
-        if (rightScore % 3 === 0) {
-          aiDifficulty = Math.floor(rightScore / 3);
-          updateDifficultyDisplay();
-        }
+
+        <script>window.onload = GameMaker_Init;</script>
+
+        <!-- Builtin injector for injecting google analytics code -->
         
-        resetBall(-1);
-      }
 
-      if (ball.x > canvas.width) {
-        leftScore++;
-        leftScoreElement.textContent = leftScore;
-        resetBall(1);
-      }
-    }
+        <!-- Custom BodyEnd code is injected here -->
+        
+    </body>
 
-    function drawCourt() {
-      ctx.fillStyle = "#05080c";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.setLineDash([12, 16]);
-      ctx.strokeStyle = "#526273";
-      ctx.lineWidth = 3;
-
-      ctx.beginPath();
-      ctx.moveTo(canvas.width / 2, 0);
-      ctx.lineTo(canvas.width / 2, canvas.height);
-      ctx.stroke();
-
-      ctx.setLineDash([]);
-    }
-
-    function drawPaddle(paddle) {
-      ctx.fillStyle = "#28a9e0";
-      ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-    }
-
-    function drawBall() {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(ball.x, ball.y, ball.size, ball.size);
-    }
-
-    function drawPausedMessage() {
-      if (!paused) return;
-
-      ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.textAlign = "center";
-      ctx.font = "bold 32px Arial";
-      ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
-
-      ctx.font = "16px Arial";
-      ctx.fillText(
-        "Press Pause or Space to resume",
-        canvas.width / 2,
-        canvas.height / 2 + 35
-      );
-    }
-
-    function gameLoop() {
-      if (!paused) {
-        updatePaddles();
-        updateBall();
-      }
-
-      drawCourt();
-      drawPaddle(leftPaddle);
-      drawPaddle(rightPaddle);
-      drawBall();
-      drawPausedMessage();
-
-      requestAnimationFrame(gameLoop);
-    }
-
-    resetGame();
-    gameLoop();
-  </script>
-</body>
+    <!-- Custom PostBody code is injected here -->
+    
 </html>

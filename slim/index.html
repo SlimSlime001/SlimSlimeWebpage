@@ -14,14 +14,12 @@
     <a class="brand" href="#home" aria-label="Pixel Arcade home"><span class="brand-mark">✦</span> PIXEL<span>ARCADE</span></a>
     <span class="topbar-note"><span class="status-dot"></span> THE ARCADE IS OPEN</span>
   </header>
-
   <main class="page-shell" id="home">
     <section class="intro" aria-labelledby="page-title">
       <p class="eyebrow">A LITTLE FRIENDLY COMPETITION</p>
       <h1 id="page-title">Choose your <span>game.</span></h1>
       <p class="intro-copy">Three timeless arcade adventures. One very important question: what are you playing first?</p>
     </section>
-
     <section class="game-picker" id="game-picker" aria-label="Choose a game">
       <button class="game-card pong-card" type="button" data-game="pong" aria-label="Play Pong">
         <span class="card-index">01 / CLASSIC</span>
@@ -39,24 +37,24 @@
         <span class="card-info"><span><strong>Jumpman</strong><small>Jump, grab stars, and reach the flag.</small></span><span class="play-arrow" aria-hidden="true">↗</span></span>
       </button>
     </section>
-
     <section class="game-view" id="game-view" hidden aria-live="polite">
       <div class="game-heading">
         <div><p class="eyebrow" id="game-kicker">NOW PLAYING</p><h2 id="game-title">Pong</h2></div>
         <button class="back-button" id="back-button" type="button">← All games</button>
       </div>
       <div class="game-panel">
-        <div class="canvas-wrap"><canvas id="game-canvas" width="720" height="480" aria-label="Game play area"></canvas><div class="canvas-message" id="canvas-message" hidden></div></div>
-        <div class="game-toolbar"><p id="game-instructions">Move your paddle with <kbd>W</kbd> / <kbd>S</kbd> or <kbd>↑</kbd> / <kbd>↓</kbd>.</p><button class="restart-button" id="restart-button" type="button">↻ Restart</button></div>
+        <div class="canvas-wrap"><canvas id="game-canvas" width="720" height="480" tabindex="0" aria-label="Game play area"></canvas><div class="canvas-message" id="canvas-message" hidden></div></div>
+        <div class="game-toolbar"><p id="game-instructions">Select a game to begin.</p><button class="restart-button" id="restart-button" type="button">↻ Restart</button></div>
       </div>
       <div class="touch-controls" id="touch-controls" hidden aria-label="Touch controls">
         <button type="button" data-control="up" aria-label="Move up">▲</button><button type="button" data-control="down" aria-label="Move down">▼</button>
       </div>
     </section>
-
     <footer class="page-footer"><span>GOOD GAMES. GOOD VIBES.</span><span>INSERT COIN <b>▮</b></span></footer>
   </main>
-  <script src="jumpman.js"></script>
-  <script src="story.js"></script>
+  <script src="arcade.js"></script>
+  <script src="games/pong.js"></script>
+  <script src="games/pacman.js"></script>
+  <script src="games/jumpman.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10121d">
-  <meta name="description" content="Pick a game and play Pong, Pac-Man, or Jumpman.">
+  <meta name="description" content="Play Pong, Pac-Man, and Jumpman at Pixel Arcade.">
   <title>Pixel Arcade — Pick a game</title>
   <link rel="stylesheet" href="styles/styles.css">
   <link rel="stylesheet" href="styles/jumpman.css">
@@ -14,12 +14,14 @@
     <a class="brand" href="#home" aria-label="Pixel Arcade home"><span class="brand-mark">✦</span> PIXEL<span>ARCADE</span></a>
     <span class="topbar-note"><span class="status-dot"></span> THE ARCADE IS OPEN</span>
   </header>
+
   <main class="page-shell" id="home">
     <section class="intro" aria-labelledby="page-title">
       <p class="eyebrow">A LITTLE FRIENDLY COMPETITION</p>
       <h1 id="page-title">Choose your <span>game.</span></h1>
       <p class="intro-copy">Three timeless arcade adventures. One very important question: what are you playing first?</p>
     </section>
+
     <section class="game-picker" id="game-picker" aria-label="Choose a game">
       <button class="game-card pong-card" type="button" data-game="pong" aria-label="Play Pong">
         <span class="card-index">01 / CLASSIC</span>
@@ -37,6 +39,7 @@
         <span class="card-info"><span><strong>Jumpman</strong><small>Jump, grab stars, and reach the flag.</small></span><span class="play-arrow" aria-hidden="true">↗</span></span>
       </button>
     </section>
+
     <section class="game-view" id="game-view" hidden aria-live="polite">
       <div class="game-heading">
         <div><p class="eyebrow" id="game-kicker">NOW PLAYING</p><h2 id="game-title">Pong</h2></div>
@@ -50,6 +53,7 @@
         <button type="button" data-control="up" aria-label="Move up">▲</button><button type="button" data-control="down" aria-label="Move down">▼</button>
       </div>
     </section>
+
     <footer class="page-footer"><span>GOOD GAMES. GOOD VIBES.</span><span>INSERT COIN <b>▮</b></span></footer>
   </main>
   <script src="arcade.js"></script>

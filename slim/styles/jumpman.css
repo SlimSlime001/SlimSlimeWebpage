@@ -1,0 +1,14 @@
+.jumpman-card { grid-column: 1 / -1; }
+.jumpman-art { background: linear-gradient(180deg, #263d72, #6b9bc0 72%, #9ac76b); }
+.jumpman-sun { position: absolute; width: 52px; height: 52px; top: 24px; right: 12%; border-radius: 50%; background: #ffd76b; box-shadow: 0 0 30px rgba(255,215,107,.35); }
+.jumpman-cloud { position: absolute; width: 80px; height: 20px; border-radius: 20px; background: rgba(255,255,255,.72); }
+.jumpman-cloud::before, .jumpman-cloud::after { content: ''; position: absolute; bottom: 5px; width: 28px; height: 28px; border-radius: 50%; background: inherit; }
+.jumpman-cloud::before { left: 13px; }.jumpman-cloud::after { left: 36px; width: 22px; height: 22px; }
+.cloud-one { top: 56px; left: 17%; }.cloud-two { top: 94px; right: 22%; transform: scale(.75); }
+.jumpman-platform { position: absolute; height: 17px; border: 2px solid #784331; border-radius: 3px; background: repeating-linear-gradient(90deg, #bd7146 0 28px, #784331 29px 31px); box-shadow: inset 0 4px #e6a25c; }
+.platform-one { width: 34%; left: 12%; bottom: 28%; }.platform-two { width: 30%; right: 10%; bottom: 44%; }
+.jumpman-coin { position: absolute; color: #ffe16b; font-size: 24px; text-shadow: 0 0 12px #ffd44f; }
+.coin-one { left: 31%; top: 37%; }.coin-two { right: 24%; top: 27%; }
+.jumpman-hero { position: absolute; left: 52%; bottom: 27%; color: #e34a56; font-size: 38px; text-shadow: 0 12px 0 #3979d4, 0 19px 0 #33283c; }
+.jumpman-flag { position: absolute; right: 8%; bottom: 17%; color: #66e19a; font-size: 38px; text-shadow: 0 0 12px rgba(102,225,154,.5); }
+@media (max-width: 640px) { .jumpman-card { grid-column: auto; } }

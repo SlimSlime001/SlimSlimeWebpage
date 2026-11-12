@@ -1,26 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Adventure Game: The World of Ruubrism</title>
-    <link rel="stylesheet" href="styles/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10121d">
+  <meta name="description" content="Pick a game and play a quick round of Pong or Pac-Man.">
+  <title>Pixel Arcade — Pick a game</title>
+  <link rel="stylesheet" href="styles/styles.css">
 </head>
-
 <body>
-    <header class="masthead">
-        <h1>Welcome to the World of Ruubrisma!</h1>
-    </header>
-    
-    <main>
-        <section class="story-intro">
-            <p>In a land of ancient magic and forgotten lore, the world of Ruubrism has been plagued by darkness and despair.</p>
-            <p>But hope remains. A hero is needed to embark on a perilous quest to vanquish the shadows and bring light back to the realm.</p>
-        </section>
-        
-        <button id="play-button">Play</button>
-    </main>
-    
-    <script type="text/javascript" src="story.js"></script>
-</body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="Pixel Arcade home"><span class="brand-mark">✦</span> PIXEL<span>ARCADE</span></a>
+    <span class="topbar-note"><span class="status-dot"></span> THE ARCADE IS OPEN</span>
+  </header>
 
+  <main class="page-shell" id="home">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">A LITTLE FRIENDLY COMPETITION</p>
+      <h1 id="page-title">Choose your <span>game.</span></h1>
+      <p class="intro-copy">Two timeless classics. One very important question: what are you playing first?</p>
+    </section>
+
+    <section class="game-picker" id="game-picker" aria-label="Choose a game">
+      <button class="game-card pong-card" type="button" data-game="pong" aria-label="Play Pong">
+        <span class="card-index">01 / CLASSIC</span>
+        <span class="game-art pong-art" aria-hidden="true"><span class="pong-paddle paddle-left"></span><span class="pong-ball"></span><span class="pong-paddle paddle-right"></span><span class="pong-score">04&nbsp;&nbsp;&nbsp; 02</span></span>
+        <span class="card-info"><span><strong>Pong</strong><small>Keep the ball in play.</small></span><span class="play-arrow" aria-hidden="true">↗</span></span>
+      </button>
+      <button class="game-card pacman-card" type="button" data-game="pacman" aria-label="Play Pac-Man">
+        <span class="card-index">02 / MAZE RUNNER</span>
+        <span class="game-art pacman-art" aria-hidden="true"><span class="maze-line maze-one"></span><span class="maze-line maze-two"></span><span class="maze-line maze-three"></span><span class="pac-dot dot-one"></span><span class="pac-dot dot-two"></span><span class="pac-dot dot-three"></span><span class="pac-face">◕</span><span class="ghost-shape">◆</span></span>
+        <span class="card-info"><span><strong>Pac-Man</strong><small>Chomp your way through the maze.</small></span><span class="play-arrow" aria-hidden="true">↗</span></span>
+      </button>
+    </section>
+
+    <section class="game-view" id="game-view" hidden aria-live="polite">
+      <div class="game-heading">
+        <div><p class="eyebrow" id="game-kicker">NOW PLAYING</p><h2 id="game-title">Pong</h2></div>
+        <button class="back-button" id="back-button" type="button">← All games</button>
+      </div>
+      <div class="game-panel">
+        <div class="canvas-wrap"><canvas id="game-canvas" width="720" height="480" aria-label="Game play area"></canvas><div class="canvas-message" id="canvas-message" hidden></div></div>
+        <div class="game-toolbar"><p id="game-instructions">Move your paddle with <kbd>W</kbd> / <kbd>S</kbd> or <kbd>↑</kbd> / <kbd>↓</kbd>.</p><button class="restart-button" id="restart-button" type="button">↻ Restart</button></div>
+      </div>
+      <div class="touch-controls" id="touch-controls" hidden aria-label="Touch controls">
+        <button type="button" data-control="up" aria-label="Move up">▲</button><button type="button" data-control="down" aria-label="Move down">▼</button>
+      </div>
+    </section>
+
+    <footer class="page-footer"><span>GOOD GAMES. GOOD VIBES.</span><span>INSERT COIN <b>▮</b></span></footer>
+  </main>
+  <script src="story.js"></script>
+</body>
 </html>

@@ -1,36 +1,19 @@
 (() => {
   const LEVELS = [
-    {
-      name: 'Sunny Start', sky: ['#78c9f5', '#d2f3ff'], hills: '#7acb72', ground: '#64bd55',
-      platforms: [[150, 355, 190], [410, 300, 190], [690, 350, 190], [965, 275, 210], [1220, 345, 180]],
-      enemies: [[515, 455, 565, 58], [820, 735, 850, -66], [1090, 990, 1140, 72]]
-    },
-    {
-      name: 'Mushroom Meadow', sky: ['#8bd6ef', '#e3f7c4'], hills: '#52b879', ground: '#4ca85c',
-      platforms: [[130, 330, 185], [375, 275, 180], [625, 345, 190], [890, 290, 190], [1155, 335, 210]],
-      enemies: [[450, 405, 545, -65], [790, 675, 835, 75], [1050, 955, 1115, -70]]
-    },
-    {
-      name: 'Blue Sky Bridge', sky: ['#607ed2', '#b9d6ff'], hills: '#6177b5', ground: '#8972c9',
-      platforms: [[155, 300, 185], [400, 355, 180], [650, 290, 190], [915, 345, 185], [1170, 285, 205]],
-      enemies: [[500, 445, 560, 70], [795, 710, 855, -75], [1080, 1000, 1135, 78]]
-    },
-    {
-      name: 'Peachy Peaks', sky: ['#f69eb5', '#ffe2b7'], hills: '#d887a4', ground: '#ba7159',
-      platforms: [[120, 350, 180], [365, 285, 175], [610, 335, 190], [880, 270, 195], [1150, 325, 210]],
-      enemies: [[455, 405, 535, 75], [785, 680, 850, -80], [1060, 970, 1135, 70]]
-    },
-    {
-      name: 'Star Summit', sky: ['#343b80', '#a16dc2'], hills: '#56569a', ground: '#5554a5',
-      platforms: [[135, 305, 185], [390, 345, 180], [640, 275, 190], [910, 325, 190], [1180, 250, 195]],
-      enemies: [[470, 420, 550, -80], [800, 700, 865, 82], [1080, 990, 1145, -76]]
-    }
+    { name: 'Sunny Start', sky: ['#78c9f5', '#d2f3ff'], hills: '#7acb72', ground: '#64bd55', heights: [380, 370, 385, 370, 380] },
+    { name: 'Mushroom Meadow', sky: ['#8bd6ef', '#e3f7c4'], hills: '#52b879', ground: '#4ca85c', heights: [385, 370, 385, 375, 385] },
+    { name: 'Blue Sky Bridge', sky: ['#607ed2', '#b9d6ff'], hills: '#6177b5', ground: '#8972c9', heights: [375, 385, 370, 385, 375] },
+    { name: 'Peachy Peaks', sky: ['#f69eb5', '#ffe2b7'], hills: '#d887a4', ground: '#ba7159', heights: [385, 370, 385, 370, 385] },
+    { name: 'Star Summit', sky: ['#343b80', '#a16dc2'], hills: '#56569a', ground: '#5554a5', heights: [375, 385, 370, 380, 370] }
   ];
   const LEVEL_WIDTH = 1480;
   const GROUND_Y = 440;
   const PLAYER_W = 26;
   const PLAYER_H = 34;
+  const PLATFORM_X = [105, 350, 595, 840, 1085];
+  const PLATFORM_W = 180;
   const PROGRESS_KEY = 'pixelArcadeJumpmanUnlocked';
+  const COLORS = ['#ef6872', '#8fcf63', '#67b9ee', '#ed9b52', '#ae83e8'];
 
   window.Arcade.register('jumpman', ({ ctx, W, H, keys, showMessage, hideMessage }) => {
     let mode = 'title';
@@ -39,48 +22,39 @@
     let unlocked = loadProgress();
 
     function loadProgress() {
-      try {
-        return Math.max(1, Math.min(LEVELS.length, Number(localStorage.getItem(PROGRESS_KEY)) || 1));
-      } catch (_) {
-        return 1;
-      }
+      try { return Math.max(1, Math.min(LEVELS.length, Number(localStorage.getItem(PROGRESS_KEY)) || 1)); }
+      catch (_) { return 1; }
     }
-
     function saveProgress() {
-      try { localStorage.setItem(PROGRESS_KEY, String(unlocked)); } catch (_) { /* Progress still works for this visit. */ }
+      try { localStorage.setItem(PROGRESS_KEY, String(unlocked)); } catch (_) { /* Keep progress for this visit. */ }
     }
-
     function start() {
       mode = 'title';
       selectedLevel = Math.min(selectedLevel, unlocked - 1);
       hideMessage();
       draw();
     }
-
     function beginLevel(index) {
       selectedLevel = index;
       const level = LEVELS[index];
-      const platforms = level.platforms.map(([x, y, w]) => ({ x, y, w }));
+      const platforms = PLATFORM_X.map((x, i) => ({ x, y: level.heights[i], w: PLATFORM_W }));
       game = {
-        level, platforms, x: 45, y: GROUND_Y - PLAYER_H, vx: 0, vy: 0,
-        grounded: true, camera: 0, score: 0, lives: 3, elapsed: 0, over: false,
-        jumpQueued: false,
+        level, platforms, x: 45, y: GROUND_Y - PLAYER_H, vx: 0, vy: 0, grounded: true,
+        camera: 0, score: 0, lives: 3, elapsed: 0, over: false, jumpQueued: false,
         coins: platforms.map((platform) => ({ x: platform.x + platform.w / 2, y: platform.y - 36 })),
-        enemies: level.enemies.map(([x, min, max, vx]) => ({ x, y: GROUND_Y - 20, min, max, vx }))
+        enemies: [[460, 420, 535, 58], [790, 745, 850, -66], [1080, 1000, 1150, 72]].map(([x, min, max, vx]) => ({ x, y: GROUND_Y - 20, min, max, vx }))
       };
       mode = 'playing';
       hideMessage();
       draw();
     }
-
     function showMap() {
       mode = 'map';
       selectedLevel = Math.min(selectedLevel, unlocked - 1);
       hideMessage();
       draw();
     }
-
-    function keydown(key, event, wasDown) {
+    function keydown(key, _event, wasDown) {
       if (wasDown) return;
       if (mode === 'title') {
         if (['enter', ' ', 'arrowup', 'w'].includes(key)) showMap();
@@ -99,7 +73,6 @@
       }
       if (['arrowup', ' ', 'w'].includes(key)) game.jumpQueued = true;
     }
-
     function update(dt, heldKeys) {
       if (mode !== 'playing' || game.over) return;
       const g = game;
@@ -123,7 +96,6 @@
           }
         }
       }
-
       g.coins = g.coins.filter((coin) => {
         if (Math.hypot(g.x + PLAYER_W / 2 - coin.x, g.y + PLAYER_H / 2 - coin.y) < 27) { g.score += 100; return false; }
         return true;
@@ -137,26 +109,28 @@
           } else {
             g.lives--;
             if (g.lives <= 0) { g.over = true; showMessage(`GAME OVER — score ${g.score}. Press Enter to return to the map.`); }
-            else { g.x = Math.max(0, g.x - 75); g.y = GROUND_Y - PLAYER_H; g.vy = 0; }
+            else { g.x = Math.max(0, g.x - 75); g.y = GROUND_Y - PLAYER_H; g.vy = 0; g.grounded = true; }
             break;
           }
         }
       }
       g.camera = Math.max(0, Math.min(LEVEL_WIDTH - W, g.x - W * 0.36));
-      if (g.x + PLAYER_W >= 1380 && g.coins.length === 0) {
+
+      // The goal is the pole and flag itself. Stars are optional bonus collectibles.
+      const flag = { x: 1380, y: 300, w: 50, h: GROUND_Y - 300 };
+      const touchingFlag = g.x < flag.x + flag.w && g.x + PLAYER_W > flag.x && g.y < flag.y + flag.h && g.y + PLAYER_H > flag.y;
+      if (touchingFlag) {
         g.over = true;
         unlocked = Math.max(unlocked, Math.min(LEVELS.length, selectedLevel + 2));
         saveProgress();
         showMessage(`LEVEL ${selectedLevel + 1} CLEAR! — score ${g.score}. Press Enter for the map.`);
       }
     }
-
     function draw() {
       if (mode === 'title') drawTitle();
       else if (mode === 'map') drawMap();
       else drawLevel();
     }
-
     function drawBackground(skyColors, hillColor) {
       const sky = ctx.createLinearGradient(0, 0, 0, H);
       sky.addColorStop(0, skyColors[0]); sky.addColorStop(1, skyColors[1]);
@@ -170,67 +144,45 @@
         ctx.beginPath(); ctx.arc(x, 90, 16, 0, Math.PI * 2); ctx.arc(x + 22, 82, 23, 0, Math.PI * 2); ctx.arc(x + 49, 92, 15, 0, Math.PI * 2); ctx.fill();
       }
     }
-
     function drawTitle() {
       drawBackground(['#4d8fd1', '#bbebfa'], '#559e68');
       ctx.fillStyle = '#64bd55'; ctx.fillRect(0, 414, W, 66);
       ctx.fillStyle = '#4d302c'; ctx.fillRect(0, 444, W, 36);
       drawHero(330, 365, 1);
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 22px monospace'; ctx.fillText('SLIMSLIME ARCADE PRESENTS', W / 2, 88);
+      ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.font = 'bold 22px monospace'; ctx.fillText('SLIMSLIME ARCADE PRESENTS', W / 2, 88);
       ctx.font = '900 76px monospace'; ctx.lineWidth = 8; ctx.strokeStyle = '#9b3d42'; ctx.strokeText('JUMPMAN', W / 2, 190);
       ctx.fillStyle = '#ffe16b'; ctx.fillText('JUMPMAN', W / 2, 190);
       ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#fff'; ctx.fillText('A BRAND-NEW PLATFORM ADVENTURE', W / 2, 232);
-      ctx.font = 'bold 16px monospace'; ctx.fillStyle = '#fff';
-      ctx.fillText(`5 WORLDS  •  ${unlocked} / ${LEVELS.length} UNLOCKED`, W / 2, 292);
+      ctx.font = 'bold 16px monospace'; ctx.fillText(`5 WORLDS  •  ${unlocked} / ${LEVELS.length} UNLOCKED`, W / 2, 292);
       ctx.fillStyle = '#fff4bd'; ctx.font = 'bold 17px monospace'; ctx.fillText('PRESS ENTER OR SPACE TO START', W / 2, 340);
       ctx.font = '13px monospace'; ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillText('MOVE: ← → / A D     JUMP: SPACE / ↑ / W', W / 2, 385);
     }
-
     function drawMap() {
       drawBackground(['#69bce7', '#d2f0db'], '#60b46e');
-      ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.font = 'bold 25px monospace'; ctx.textAlign = 'center';
-      ctx.fillText('WORLD MAP', W / 2, 48);
-      ctx.font = '13px monospace'; ctx.fillStyle = '#fff';
-      ctx.fillText('CHOOSE A WORLD  •  ← → TO MOVE  •  ENTER TO PLAY', W / 2, 75);
-
-      const nodes = [
-        { x: 90, y: 345 }, { x: 220, y: 250 }, { x: 355, y: 330 }, { x: 500, y: 210 }, { x: 635, y: 295 }
-      ];
+      ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.font = 'bold 25px monospace'; ctx.textAlign = 'center'; ctx.fillText('WORLD MAP', W / 2, 48);
+      ctx.font = '13px monospace'; ctx.fillStyle = '#fff'; ctx.fillText('CHOOSE A WORLD  •  ← → TO MOVE  •  ENTER TO PLAY', W / 2, 75);
+      const nodes = [{ x: 90, y: 345 }, { x: 220, y: 250 }, { x: 355, y: 330 }, { x: 500, y: 210 }, { x: 635, y: 295 }];
       ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#fff4bd'; ctx.lineWidth = 24;
       ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y);
       for (let i = 1; i < nodes.length; i++) {
         const prev = nodes[i - 1], next = nodes[i];
-        const midX = (prev.x + next.x) / 2;
-        ctx.quadraticCurveTo(midX, prev.y, next.x, next.y);
+        ctx.quadraticCurveTo((prev.x + next.x) / 2, prev.y, next.x, next.y);
       }
       ctx.stroke(); ctx.strokeStyle = '#d7a85b'; ctx.lineWidth = 4; ctx.stroke();
-
       nodes.forEach((node, index) => {
-        const isOpen = index < unlocked;
-        const isSelected = index === selectedLevel;
+        const isOpen = index < unlocked, isSelected = index === selectedLevel;
         ctx.save();
         if (isSelected) { ctx.beginPath(); ctx.arc(node.x, node.y, 37, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,.48)'; ctx.fill(); }
-        ctx.beginPath(); ctx.arc(node.x, node.y, 27, 0, Math.PI * 2);
-        ctx.fillStyle = isOpen ? ['#ef6872', '#8fcf63', '#67b9ee', '#ed9b52', '#ae83e8'][index] : '#7b8290';
-        ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = isSelected ? '#fff' : 'rgba(255,255,255,.75)'; ctx.stroke();
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#fff';
-        ctx.fillText(isOpen ? String(index + 1) : '×', node.x, node.y + 1);
-        ctx.textBaseline = 'alphabetic';
-        ctx.font = 'bold 12px monospace'; ctx.fillStyle = '#fff';
-        ctx.fillText(isOpen ? LEVELS[index].name : 'LOCKED', node.x, node.y + 52);
-        if (isOpen) {
-          ctx.fillStyle = '#fff2a1'; ctx.font = '13px sans-serif';
-          ctx.fillText('★'.repeat(index < selectedLevel ? 3 : 0), node.x, node.y - 43);
-        }
+        ctx.beginPath(); ctx.arc(node.x, node.y, 27, 0, Math.PI * 2); ctx.fillStyle = isOpen ? COLORS[index] : '#7b8290'; ctx.fill();
+        ctx.lineWidth = 4; ctx.strokeStyle = isSelected ? '#fff' : 'rgba(255,255,255,.75)'; ctx.stroke();
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#fff'; ctx.fillText(isOpen ? String(index + 1) : '×', node.x, node.y + 1);
+        ctx.textBaseline = 'alphabetic'; ctx.font = 'bold 12px monospace'; ctx.fillText(isOpen ? LEVELS[index].name : 'LOCKED', node.x, node.y + 52);
         ctx.restore();
       });
       drawHero(nodes[selectedLevel].x - 12, nodes[selectedLevel].y - 14, 0.65);
-      ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.font = 'bold 14px monospace';
-      ctx.fillText(`${unlocked} OF ${LEVELS.length} WORLDS OPEN`, W / 2, 445);
+      ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.font = 'bold 14px monospace'; ctx.fillText(`${unlocked} OF ${LEVELS.length} WORLDS OPEN`, W / 2, 445);
       ctx.font = '12px monospace'; ctx.fillText('COMPLETE A WORLD TO UNLOCK THE NEXT ONE', W / 2, 466);
     }
-
     function drawLevel() {
       const g = game, level = g.level, camera = g.camera;
       drawBackground(level.sky, level.hills);
@@ -267,13 +219,11 @@
       ctx.fillStyle = '#f7f0dc'; ctx.fillRect(flagX, 300, 5, 140);
       ctx.fillStyle = '#5be09a'; ctx.beginPath(); ctx.moveTo(flagX + 5, 304); ctx.lineTo(flagX + 49, 318); ctx.lineTo(flagX + 5, 334); ctx.closePath(); ctx.fill();
       drawHero(Math.round(g.x - camera), Math.round(g.y), 1);
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 15px monospace'; ctx.textAlign = 'left';
-      ctx.fillText(`WORLD ${selectedLevel + 1}: ${level.name.toUpperCase()}`, 18, 27);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 15px monospace'; ctx.textAlign = 'left'; ctx.fillText(`WORLD ${selectedLevel + 1}: ${level.name.toUpperCase()}`, 18, 27);
       ctx.textAlign = 'right'; ctx.fillText(`STARS ${level.platforms.length - g.coins.length}/${level.platforms.length}   SCORE ${String(g.score).padStart(4, '0')}   ♥ ${g.lives}`, W - 18, 27);
       ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '11px monospace'; ctx.textAlign = 'center';
-      if (g.coins.length) ctx.fillText('COLLECT EVERY STAR TO UNLOCK THE GOAL', W / 2, H - 12);
+      if (g.coins.length) ctx.fillText('COLLECT STARS FOR BONUS POINTS  •  TOUCH THE FLAG TO FINISH', W / 2, H - 12);
     }
-
     function drawHero(x, y, scale) {
       ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
       ctx.fillStyle = '#d94252'; ctx.fillRect(4, 0, 18, 7); ctx.fillRect(0, 6, 25, 5);
@@ -283,10 +233,9 @@
       ctx.fillStyle = '#392d3c'; ctx.fillRect(0, 30, 11, 4); ctx.fillRect(16, 30, 11, 4);
       ctx.restore();
     }
-
     return {
       title: 'Jumpman', kicker: 'A FIVE-WORLD PLATFORM ADVENTURE',
-      instructions: 'Press <kbd>Enter</kbd> or <kbd>Space</kbd> to start. Move with <kbd>←</kbd> / <kbd>→</kbd> or <kbd>A</kbd> / <kbd>D</kbd>; jump with <kbd>Space</kbd>, <kbd>↑</kbd>, or <kbd>W</kbd>.',
+      instructions: 'Press <kbd>Enter</kbd> or <kbd>Space</kbd> to start. Move with <kbd>←</kbd> / <kbd>→</kbd> or <kbd>A</kbd> / <kbd>D</kbd>; jump with <kbd>Space</kbd>, <kbd>↑</kbd>, or <kbd>W</kbd>. Stars are optional bonuses; touch the flag to finish.',
       touchControls: false, start, update, draw, keydown
     };
   });
